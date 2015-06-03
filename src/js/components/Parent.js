@@ -1,4 +1,5 @@
 var React = require('React');
+var Card = require('./Card');
 
 var Parent = React.createClass({
 
@@ -6,6 +7,7 @@ var Parent = React.createClass({
         return (
             <div>
               Parent component.
+              <Card />
             </div>
         );
     }

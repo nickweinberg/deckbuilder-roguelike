@@ -1,7 +1,7 @@
 var React = require('React');
 var Router = require('react-router');
 var RouteHandler = Router.RouteHandler;
-var Parent = require('./Parent');
+var GameBoard = require('./GameBoard');
 
 
 var App = React.createClass({
@@ -9,7 +9,7 @@ var App = React.createClass({
     return (
       <div className="main-container">
         <div className="inner-container">
-          <Parent />
+          <GameBoard />
           <RouteHandler />
           <div> FOOTER </div>
         </div>
