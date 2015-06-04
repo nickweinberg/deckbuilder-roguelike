@@ -5,15 +5,156 @@
 </head>
 <body>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.3/lodash.js" type="text/javascript"></script>
 <script type="text/javascript">
 
-console.log('hi');
+
+var characterObject = {
+  className: 'Default',
+  startingDeck: [1,2,3,4,5,6,7,8,9,10],
+  startingHealth: 20,
+  startingActions: 1,
+  startingHandSize: 2,
+  startingMana: 2,
+}
 
 
+function Player(charObj) {
+  // characterClass changes card types/passives/starting deck etc.
+  // this.characterClass =  characterClass;
+  this.startingDeck = charObj.startingDeck;
+  this.deck = _.shuffle(this.startingDeck);
+
+  // starting attributes - intialize off charObj
+  this.discards = [];
+  this.hand = [];
+
+  this.startingHealth   = charObj.startingHealth;
+  this.startingActions  = charObj.startingActions;
+  this.startingHandSize = charObj.startingHandSize;
+  this.startingMana     = charObj.startingMana;
+  // current attributes
+
+/*
+  -- starting_attributes --
+<fn>
+resetPlayer()
+<int>
+startingHealth
+startingActions
+startingMana
+startingHandSize
+
+-- current
+<int>
+- each battle
+currentHealth
+currentHandSize
+
+- each turn
+currentMana
+currentActions
+
+*/
+
+  console.log(this.deck);
+}
+
+Player.prototype.resetPlayer = function() {
+  // reset all current attributes to starting attributes
+  // these reset each battle, not each turn
+  this.hand = [];
+  this.discards = [];
+
+  this.currentHealth = this.startingHealth;
+  this.currentHandSize = this.startingHandSize;
+  // also reset for first turn
+  this.resetForTurn()
+
+};
+
+Player.prototype.resetForTurn = function() {
+  // these all reset each turn.
+  this.inPlay = [];
+  this.currentActions = this.startingActions;
+  this.currentMana = this.startingMana;
+
+};
+
+Player.prototype.reshuffle = function() {
+  // shuffle cards in discard pile into deck
+  // check if there's any cards in discard to shuffle into deck
+  this.deck = _.shuffle(this.discards);
+  this.discards = []; // reset discards
+}
+
+Player.prototype.draw = function(numDraws) {
+  // numDraws is number of cards to draw
+  console.log('drawing: ' + numDraws + ' cards');
+
+  // draw cards
+  for(var i=0; i<numDraws; i++) {
+    // check if there's any cards left to draw
+    if (this.deck.length < 1) {
+      console.log('reshuffling deck');
+      this.reshuffle();
+      // if deck still doesn't have any cards don't draw any cards
+      if (this.deck.length < 1) {
+        console.log('Not drawing any cards');
+      } else {
+        // draw a card
+        this.hand.push(this.deck.pop());
+      }
+    } else {
+      // draw a card
+      this.hand.push(this.deck.pop());
+    }
+  }
+};
+
+Player.prototype.handSize = function() { return this.hand.length };
+//
+
+Player.prototype.logState = function() {
+  console.log(this);
+}
+
+var player = new Player(characterObject);
+player.resetPlayer();
+player.draw(5);
+player.logState();
+
+/*
+Setup game.
+Player draws starting h
+
+Player:
 
 
+-- Places cards can be --
+<array>
+Deck
+Hand
+Discard
+In Play
 
+-- starting_attributes --
+<fn>
+resetPlayer()
+<int>
+startingHealth
+startingActions
+startingMana
+startingHandSize
 
+-- current
+<int>
+currentHealth
+currentActions
+currentMana
+currentHandSize
+*/
 
 
 </script>
