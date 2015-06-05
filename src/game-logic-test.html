@@ -39,7 +39,8 @@ in parser: check type -> if damage
 */
 
 // can make this json in future
-card_list = [
+// card_list =[]
+c = [
 {
   "id": 1,
   "name": "Attack 1",
@@ -60,7 +61,7 @@ card_list = [
 },
 {
   "id": 4,
-  "name": "Draw One"
+  "name": "Draw One",
   "damage": 0,
   "type": "action",
   "cost": "1A",
@@ -75,7 +76,7 @@ card_list = [
   "extra": ['1-A', '1-D']
 },
 {
-  "id": 6
+  "id": 6,
   "name": "Gain 3 Mana",
   "damage": 0,
   "type": "mana",
@@ -90,14 +91,18 @@ card_list = [
   "cost": "2-M",
 }];
 
+/* idea cards are just composed of functions */
 
 
+var humanID = makeID();
+var monsterID = makeID();
 
 var playerCharacterObject = {
-  playerID: makeID(),
+  playerID: humanID,
+  opponentID: monsterID,
   className: 'HumanPlayer',
   characterClass: null,
-  startingDeck: [1,2,3,4,5,6,7,8,9,10],
+  startingDeck: [c[0],c[0],c[0],c[0],c[0],c[1], c[4],c[5],c[5]],
   startingHealth: 20,
   startingActions: 1,
   startingHandSize: 2,
@@ -105,10 +110,11 @@ var playerCharacterObject = {
 };
 
 var enemyCharacterObject = {
-  playerID: makeID(),
+  playerID: monsterID,
+  opponentID: humanID,
   className: 'GenericMonsterOne',
   characterClass: 'Zombie',
-  startingDeck: [1,1,1,1,5],
+  startingDeck: [c[0],c[0],c[0],c[0],c[1]],
   startingHealth: 5,
   startingActions: 1,
   startingHandSize: 1,
@@ -142,6 +148,8 @@ function Player(charObj) {
     */
   this.startingDeck = charObj.startingDeck;
   this.deck = _.shuffle(this.startingDeck);
+  this.playerID = charObj.playerID;
+  this.opponentID = charObj.opponentID;
 
   // starting attributes - intialize off charObj
   this.discards = [];
@@ -157,7 +165,7 @@ function Player(charObj) {
 
 
 
-  console.log(this.deck);
+  // console.log(this.deck);
 }
 
 Player.prototype.resetPlayer = function() {
@@ -219,15 +227,37 @@ Player.prototype.handSize = function() { return this.hand.length };
 //
 
 Player.prototype.logState = function(lookup) {
-  console.log(this[lookup]);
+  // console.log(this[lookup]);
 }
 
 Player.prototype.playCard = function(card) {
   // try to play a card
-
+  if (this.isLegal(card)) {
+    // play card
+  } else {
+    // emit event not legal, or don't play it
+  }
   //
   // if action check
 }
+
+Player.prototype.parseCard = function(card) {
+  /*
+   ex. card:
+  {
+  "id": 5,
+  "name": "Basic Cantrip",
+  "damage": 1,
+  "type": "action",
+  "cost": '1-A',
+  "extra": ['1-A', '1-D']
+  }
+  Takes card and .... umm.
+
+  */
+},
+
+
 
 Player.prototype.isLegal = function(card) {
   // takes a card -> bool
@@ -242,11 +272,12 @@ gameState = {
   humanID: playerCharacterObject.playerID,
   enemyID: enemyCharacterObject.playerID,
   currentActivePlayer: null, // id of current active player
-  gameStatus: {
+  currentPhase: {
+    'BEGINTURN': false,
+    'MAIN': false,
     'RESOLVE': false,
-    'ACTION': false,
-    'GAMEOVER': false
-  }
+  },
+  isGameOver: false
 };
 
 
@@ -267,6 +298,12 @@ function battle(human, enemy) {
 
   human.logState('hand');
   enemy.logState('hand');
+
+  // StartPhase()
+
+  // ResolvePhase()
+
+  // Action()
 
 }
 
@@ -305,7 +342,6 @@ currentActions
 currentMana
 currentHandSize
 */
-
 
 </script>
 </body>
