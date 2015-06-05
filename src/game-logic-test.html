@@ -9,26 +9,145 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.3/lodash.js" type="text/javascript"></script>
 <script type="text/javascript">
 
+lastID = 0
+function makeID() {
+  // can use generator in future
+  var id_list = Array.apply(0, Array(101)).map(function(x,y) { return y});
+  lastID += 1; // add 1 to global
+  return id_list[lastID];
+}
 
-var characterObject = {
-  className: 'Default',
+/*
+Cards are just objects with data.
+Player() will have a parse function that takes a card
+and acts on it.
+*/
+
+/*
+costs and abilities
+  "*-TYPE"
+  * is cost or bonus
+  IE.
+  in Extra: 1-D is Draw One Card
+  in Extra: 3-M is Gain 3 Mana
+  in Cost:  1-A is costs 1 Attack
+  in Cost:  5-A is costs 5 attack
+
+
+in parser: check type -> if damage
+
+*/
+
+// can make this json in future
+card_list = [
+{
+  "id": 1,
+  "name": "Attack 1",
+  "damage": 1,
+  "type": "attack"
+},
+{
+  "id": 2,
+  "name": "Attack 2",
+  "damage": 2,
+  "type": "attack"
+},
+{
+  "id": 3,
+  "name": "Attack 3",
+  "damage": 3,
+  "type": "attack"
+},
+{
+  "id": 4,
+  "name": "Draw One"
+  "damage": 0,
+  "type": "action",
+  "cost": "1A",
+  "extra": ['1-D']
+},
+{
+  "id": 5,
+  "name": "Basic Cantrip",
+  "damage": 1,
+  "type": "action",
+  "cost": '1-A',
+  "extra": ['1-A', '1-D']
+},
+{
+  "id": 6
+  "name": "Gain 3 Mana",
+  "damage": 0,
+  "type": "mana",
+  "cost": 0,
+  "extra": ['3-M']
+},
+{
+  "id": 7,
+  "name": "Basic Spell Card",
+  "damage": 5,
+  "type": "spell",
+  "cost": "2-M",
+}];
+
+
+
+
+var playerCharacterObject = {
+  playerID: makeID(),
+  className: 'HumanPlayer',
+  characterClass: null,
   startingDeck: [1,2,3,4,5,6,7,8,9,10],
   startingHealth: 20,
   startingActions: 1,
   startingHandSize: 2,
   startingMana: 2,
-}
+};
+
+var enemyCharacterObject = {
+  playerID: makeID(),
+  className: 'GenericMonsterOne',
+  characterClass: 'Zombie',
+  startingDeck: [1,1,1,1,5],
+  startingHealth: 5,
+  startingActions: 1,
+  startingHandSize: 1,
+  startingMana: 1
+};
 
 
 function Player(charObj) {
   // characterClass changes card types/passives/starting deck etc.
   // this.characterClass =  characterClass;
+  /*
+  -- starting_attributes --
+    <fn>
+    resetPlayer()
+    <int>
+    startingHealth
+    startingActions
+    startingMana
+    startingHandSize
+
+    -- current
+    <int>
+    - each battle
+    currentHealth
+    currentHandSize
+
+    - each turn
+    currentMana
+    currentActions
+
+    */
   this.startingDeck = charObj.startingDeck;
   this.deck = _.shuffle(this.startingDeck);
 
   // starting attributes - intialize off charObj
   this.discards = [];
   this.hand = [];
+  this.inPlay = []; // current cards in play
+  this.equipment = [] // current equipment in play
 
   this.startingHealth   = charObj.startingHealth;
   this.startingActions  = charObj.startingActions;
@@ -36,27 +155,7 @@ function Player(charObj) {
   this.startingMana     = charObj.startingMana;
   // current attributes
 
-/*
-  -- starting_attributes --
-<fn>
-resetPlayer()
-<int>
-startingHealth
-startingActions
-startingMana
-startingHandSize
 
--- current
-<int>
-- each battle
-currentHealth
-currentHandSize
-
-- each turn
-currentMana
-currentActions
-
-*/
 
   console.log(this.deck);
 }
@@ -66,6 +165,9 @@ Player.prototype.resetPlayer = function() {
   // these reset each battle, not each turn
   this.hand = [];
   this.discards = [];
+  this.equipment = [];
+
+  this.deck = _.shuffle(this.startingDeck);
 
   this.currentHealth = this.startingHealth;
   this.currentHandSize = this.startingHandSize;
@@ -116,14 +218,62 @@ Player.prototype.draw = function(numDraws) {
 Player.prototype.handSize = function() { return this.hand.length };
 //
 
-Player.prototype.logState = function() {
-  console.log(this);
+Player.prototype.logState = function(lookup) {
+  console.log(this[lookup]);
 }
 
-var player = new Player(characterObject);
-player.resetPlayer();
-player.draw(5);
-player.logState();
+Player.prototype.playCard = function(card) {
+  // try to play a card
+
+  //
+  // if action check
+}
+
+Player.prototype.isLegal = function(card) {
+  // takes a card -> bool
+
+  //
+}
+
+
+
+gameState = {
+  turnNum: 0, // current turn number
+  humanID: playerCharacterObject.playerID,
+  enemyID: enemyCharacterObject.playerID,
+  currentActivePlayer: null, // id of current active player
+  gameStatus: {
+    'RESOLVE': false,
+    'ACTION': false,
+    'GAMEOVER': false
+  }
+};
+
+
+function battle(human, enemy) {
+  /* main game loop
+  /*  takes two Player objects
+  /*  human and enemy
+  /*  starts battle
+   */
+
+  // reset both Players
+  human.resetPlayer();
+  enemy.resetPlayer();
+
+  // draw starting hands
+  human.draw(player.currentHandSize);
+  enemy.draw(enemy.currentHandSize);
+
+  human.logState('hand');
+  enemy.logState('hand');
+
+}
+
+player = new Player(playerCharacterObject);
+opponent = new Player(enemyCharacterObject);
+
+battle(player, opponent);
 
 /*
 Setup game.
